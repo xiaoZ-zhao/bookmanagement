@@ -54,6 +54,7 @@
 					<target>1.8</target>
 				</configuration>
 			</plugin>
+	<!--使用插件运行-->
 			<plugin>
 				<groupId>org.apache.tomcat.maven</groupId>
 				<artifactId>tomcat7-maven-plugin</artifactId>

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>新增图书页</title>
+<link href="../../demo/demo.css" rel="stylesheet" type="text/css" />
+<script src="../../scripts/boot.js" type="text/javascript"></script>
+</head>
+<body>
+ <form id="form1" method="post">
+	<fieldset style="border: solid 1px #aaa; padding: 3px;">
+		<legend>新增图书信息</legend>
+		<div style="padding: 5px;">
+			<table>
+				<tr>
+					<td align="right">图书名称</td>
+					<td><input name="bookName" class="mini-textbox" required="true" requiredErrorText="您忘记名字了" /></td>
+					
+					<td align="right">出版社</td>
+					<td><input name="publisher" class="mini-textbox" required="true" emptyText="请输入出版社" /></td>
+
+				</tr>
+				<tr>
+					<td align="right">作者</td>
+					<td><input name="author" class="mini-textbox" required="true" /></td>
+					
+					<td align="right">图书类别</td>
+					<td><input name="bookType" class="mini-combobox" url="../../data/booktype.txt"  
+							showNullItem="true" nullItemText="--请选择类别--" allowInput="true"/></td>
+				</tr>
+				<tr>
+					<td align="right">剩余数量</td>
+					<td><input name="remain" class="mini-spinner" minValue="0" maxValue="2147483647" increment=1 format="#,0" /></td>
+				</tr>
+			</table>
+		</div>
+	</fieldset>
+	<div style="text-align: center; padding: 10px;">
+		<a class="mini-button" onclick="onOk" style="width: 60px; margin-right: 20px;">确定</a>
+		<a class="mini-button" onclick="onCancel" style="width: 60px;">取消</a>
+	</div>
+	</form>
+	<script type="text/javascript">
+		mini.parse();
+
+		var form = new mini.Form("form1");
+		
+
+		function onOk() {
+			console.log("3333");
+			var o = form.getData();
+			form.validate();
+			if (form.isValid() == false)
+				return;
+			var json = mini.encode(o);
+				console.log(json);
+			$.ajax({
+				url : "../../bookinfoaddaction?method=addbookinfo",
+				type : 'post',
+				data : {
+					data : json
+				},
+				cache : false,
+				success : function(text) {
+					mini.alert(text,"提示：",function(){
+						CloseWindow("save");
+					});
+				},
+				error : function(jqXHR, textStatus, errorThrown) {
+					alert(jqXHR.responseText);
+					CloseWindow();
+				}
+			});
+		}
+		
+		function CloseWindow(action) {
+			if (window.CloseOwnerWindow){
+				return window.CloseOwnerWindow(action);
+			}
+			else{
+				window.close();
+			}
+		}
+	
+		function onCancel(e) {
+			CloseWindow("cancel");
+		}
+		
+	</script>
+</body>
+</html>

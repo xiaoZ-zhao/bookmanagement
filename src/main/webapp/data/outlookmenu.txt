@@ -1,0 +1,7 @@
+﻿[
+	{ id: "bookinfo", text: "图书信息管理", iconCls: "icon-add"},
+	{ id: "listbook", pid: "bookinfo", text: "图书列表", iconCls: "icon-add", url: "/bookmanagement/pages/bookinfo/bookinfolist.html" },
+
+	{ id: "borrowinfo", text: "借阅信息管理", iconCls: "icon-add"},
+	{ id: "listborrow", pid: "borrowinfo", text: "借阅列表", url: "/bookmanagement/pages/borrowinfo/borrowinfolist.html", iconPosition: "top" }	
+]

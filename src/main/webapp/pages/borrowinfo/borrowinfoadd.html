@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>借阅信息新增页</title>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<link href="../../demo/demo.css" rel="stylesheet" type="text/css" />
+<script src="../../scripts/boot.js" type="text/javascript"></script>
+    <style type="text/css">
+    html, body
+    {        
+        padding:0;
+        margin:0;
+        border:0;
+        height:100%;
+        overflow:hidden;
+    }
+    </style>
+</head>
+<body>    
+     
+    <form id="form1" method="post">
+        <fieldset style="border:solid 1px #aaa;padding:3px;width::450px">
+            <legend align="left">请填写借阅信息</legend>
+        <table align="center">
+            <tr>
+                <td>
+                	<input labelField="true" label="所借图书"  id="bookId" name="bookId" emptyText="请选择" 
+                		class="mini-combobox" url="../../borrowinfoaddaction?method=querybookinfo"
+                		required="true" valueField="bookId" textField="bookName" emptyText="请选择..." />
+                </td>
+                <td>    
+                    <input labelField="true" label="借阅编号"  id="borrowId" name="borrowId" 
+                    	class="mini-textbox" required="true" />
+                </td>
+            </tr>
+            <tr>
+               <td>    
+                    <input labelField="true" label="借阅人"  id="borrower" name="borrower" emptyText="请填写借阅人" 
+                    	class="mini-textbox" required="true" requiredErrorText="借阅人不能为空" />
+                </td>
+                 <td>    
+                    <input labelField="true" label="联系电话" vtype="int;rangeLength:1,13"  id="phone" name="phone" 
+                    	class="mini-textbox"  required="true"/>
+                </td>
+            </tr>
+            <tr>
+                 <td>    
+                    <input labelField="true" label="借阅时间"  id="borrowtime" name="borrowtime" class="mini-datepicker" 
+                    	 style="width:250px;" allowinput="false" format="yyyy-MM-dd HH:mm:ss" showTime="true"
+                    	 timeFormat="HH:mm:ss" showOkButton="true" showClearButton="false" ondrawdate="onDrawDate" required="true"/>
+                </td>
+            </tr>
+        </table>            
+        <div style="text-align:center;padding:10px;">               
+            <a class="mini-button" onclick="onOk" style="width:60px;margin-right:20px;">确定</a>       
+            <a class="mini-button" onclick="onCancel" style="width:60px;">取消</a>       
+        </div>     
+         </fieldset>   
+    </form>
+    <script type="text/javascript">
+        mini.parse();
+
+        setFormValue();
+        var form = new mini.Form("form1");
+
+        function SaveData() {
+            var o = form.getData();            
+
+            form.validate();
+            if (form.isValid() == false) 
+            	return;
+
+            var json = mini.encode(o);
+            $.ajax({
+                url: "../../borrowinfoaddaction?method=addborrowinfo",
+		        type: 'post',
+                data: { data: json },
+                cache: false,
+                success: function (text) {
+                	mini.alert(text,"提示",function(){
+                		 CloseWindow("save");
+                	});
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    alert(jqXHR.responseText);
+                    CloseWindow();
+                }
+            });
+        }
+        
+        //设置控件的初始值
+        function setFormValue(){
+        	 $.ajax({
+                 url: "../../borrowinfoaddaction?method=getnextborrowid",
+ 		        type: 'post',
+                 cache: false,
+                 success: function (text) {
+                 	//设置借阅编号
+                 	mini.get("borrowId").setValue(text);
+                 	//设置默认时间
+                 	mini.get("borrowtime").setValue(new Date());
+                 },
+                 error: function (jqXHR, textStatus, errorThrown) {
+                     alert(jqXHR.responseText);
+                     CloseWindow();
+                 }
+             });
+        }
+		//时间范围设置
+        function onDrawDate(e){
+        	var date=e.date;
+        	var d=new Date();
+        	if(date.getTime()>d.getTime()){
+        		e.allowSelect=false;
+        	}
+        }
+		
+        function SetData(data) {
+            if (data.action == "listButton") {
+              
+                data = mini.clone(data);
+                alert(data);
+				var bookId=data.bookId;
+                $.ajax({
+                    url: "../../borrowinfoaddaction?method=getbooknamebybookid&bookid=" + bookId,
+                    cache: false,
+                    success: function (text) {
+                      mini.get("bookId").setValue(bookId);
+                      mini.get("bookId").setText(text);
+                      mini.get("bookId").setEnabled(false);
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        alert(jqXHR.responseText);
+                        CloseWindow();
+                    }
+                });
+            }
+        }
+        
+        function CloseWindow(action) {
+			if (window.CloseOwnerWindow){
+				return window.CloseOwnerWindow(action);
+			}
+			else{
+				window.close();
+			}
+		}
+
+        function onOk(e) {
+            SaveData();
+        }
+        function onCancel(e) {
+            CloseWindow("cancel");
+        }
+     </script>
+</body>
+</html>

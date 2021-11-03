@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>修改图书页</title>
+<link href="../../demo/demo.css" rel="stylesheet" type="text/css" />
+<script src="../../scripts/boot.js" type="text/javascript"></script>
+</head>
+<body>
+<form id="form1" method="post">
+<input name="bookId" class="mini-hidden" />
+	<fieldset style="border: solid 1px #aaa; padding: 3px;">
+		<legend>修改图书信息</legend>
+		<div style="padding: 5px;">
+			<table>
+				<tr>
+					<td align="right">图书名称</td>
+					<td><input name="bookName" class="mini-textbox" required="true"  /></td>
+					
+					<td align="right">出版社</td>
+					<td><input name="publisher" class="mini-textbox" required="true"  /></td>
+
+				</tr>
+				<tr>
+					<td align="right">作者</td>
+					<td><input name="author" class="mini-textbox" required="true" /></td>
+					
+					<td align="right">图书类别</td>
+					<td><input name="bookType" class="mini-combobox" url="/bookmanagement/data/booktype.txt"  
+							readonly="true"/></td>
+				</tr>
+				<tr>
+					<td align="right">剩余数量</td>
+					<td><input name="remain" class="mini-spinner" minValue="1" maxValue="200" /></td>
+				</tr>
+			</table>
+		</div>
+	</fieldset>
+	<div style="text-align: center; padding: 10px;">
+		<a class="mini-button" onclick="onOk" style="width: 60px; margin-right: 20px;">确定</a>
+		<a class="mini-button" onclick="onCancel" style="width: 60px;">取消</a>
+	</div>
+	</form>
+	<script type="text/javascript">
+		mini.parse();
+
+		var form = new mini.Form("form1");
+		function SaveData() {
+			var o = form.getData();
+			form.validate();
+			if (form.isValid() == false)
+				return;
+			var json = mini.encode(o);
+			$.ajax({
+				url : "../../bookinfoeditaction?method=updatebookinfo",
+				type : 'post',
+				data : {
+					data : json
+				},
+				cache : false,
+				success : function(text) {
+					mini.alert(text,"提示：",function(){
+						CloseWindow("save");
+					});
+				},
+				error : function(jqXHR, textStatus, errorThrown) {
+					alert(jqXHR.responseText);
+					CloseWindow();
+				}
+			});
+		}
+		
+		//打开修改填入表单数据
+		function SetData(data){
+			data=mini.clone(data);
+			$.ajax({
+				url:"../../bookinfoeditaction?method=querybookinfobyid&bookid="+data.bookId,
+				cache: false,
+				success: function (text){
+					var o= mini.decode(text);
+					form.setData(o);
+					form.setChanged(false);
+				}
+			});
+		}
+		
+		function CloseWindow(action) {
+			if (window.CloseOwnerWindow){
+				return window.CloseOwnerWindow(action);
+			}
+			else{
+				window.close();
+			}
+		}
+		function onOk(e) {
+			SaveData();
+		}
+		
+		//点击取消按钮，提醒数据是否保存
+		function onCancel(e) {
+			if(form.isChanged()){
+				mini.confirm("数据被修改了，是否保存？" , "提醒" , function (action){
+					if(action=="ok"){
+						SaveData();
+					}else{
+						CloseWindow("cancel");
+					}
+				});
+			}else{
+				CloseWindow("cancel");
+			}
+		}
+		
+	</script>
+</body>
+</html>

@@ -41,6 +41,7 @@ public class BookinfoAddAction extends HttpServlet {
 	 */
 	public void addBookInfo(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		//获取到前台传输的数据
 		String data = request.getParameter("data");
 		Bookinfo bookInfo = JSON.parseObject(data, Bookinfo.class);
 		bookInfo.setBookId(UUID.randomUUID().toString());
